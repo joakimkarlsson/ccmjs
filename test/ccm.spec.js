@@ -40,7 +40,6 @@ describe('ccm', function() {
     expect(ccm.calculate(func)).to.equal(1);
   });
 
-  it('does not count a switch statement containing only a default');
 
   it('counts a for loop as 1', function() {
     var func = 'function f() { var i, a; for(i = 0; i<10; i++){ a = i; } }';
@@ -124,5 +123,6 @@ describe('ccm', function() {
     expect(ccm.calculate(func)).to.equal(1);
   });
 
+  it('does not count a switch statement containing only a default');
   it('does not count `throw` at the end of a function');
 });
