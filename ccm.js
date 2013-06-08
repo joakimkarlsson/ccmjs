@@ -10,7 +10,16 @@ function calculate(code) {
   toplevel.walk(new uglify.TreeWalker(function(node) {
     if(node instanceof uglify.AST_If) {
       ccm += 1;
+
+      if(node.alternative) {
+        ccm += 1;
+      }
     }
+
+    if(node instanceof uglify.AST_SwitchBranch) {
+      ccm += 1;
+    }
+
   }));
 
 
