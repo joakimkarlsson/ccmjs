@@ -104,6 +104,10 @@ describe('ccm', function() {
     expect(ccm.calculate(func)).to.equal(2);
   });
 
+  it('counts `?:` as 2', function() {
+    var func = 'function f() { var a = b ? 1 : 2; }';
+    expect(ccm.calculate(func)).to.equal(3);
+  });
   it('does not count `return` at the end of a function');
   it('does not count `throw` at the end of a function');
 });
