@@ -27,6 +27,14 @@ function calculate(code) {
     if(node instanceof uglify.AST_While) {
       ccm += 1;
     }
+
+    if(node instanceof uglify.AST_Do) {
+      ccm += 1;
+    }
+
+    if(node instanceof uglify.AST_Break) {
+      ccm += 1;
+    }
   }));
 
 

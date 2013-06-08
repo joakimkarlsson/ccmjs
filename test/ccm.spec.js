@@ -54,4 +54,16 @@ describe('ccm', function() {
     expect(ccm.calculate(func)).to.equal(2);
   });
 
+  it('counts do-while as 1', function() {
+    var func = 'function f() { var a; do { b = 1; } while ( a ); }';
+
+    expect(ccm.calculate(func)).to.equal(2);
+  });
+
+  it('counts `break` as 1', function() {
+    var func = 'function f() { var a; while(a) { break; } }';
+
+    expect(ccm.calculate(func)).to.equal(3);
+  });
+
 });
