@@ -20,6 +20,9 @@ function calculate(code) {
       ccm += 1;
     }
 
+    if(node instanceof uglify.AST_For) {
+      ccm += 1;
+    }
   }));
 
 
