@@ -1,13 +1,14 @@
 var uglify = require('uglify-js');
 var util = require('util');
 
+function calculate(func) {
+  var toplevel = uglify.parse(func);
 
-function calculate(code) {
-  var toplevel = uglify.parse(code);
+   console.log(util.inspect(toplevel, {depth: null, colors: true}));
 
   var ccm = 1;
 
-  toplevel.walk(new uglify.TreeWalker(function(node) {
+  var treeWalker = new uglify.TreeWalker(function(node) {
     if(node instanceof uglify.AST_If) {
       ccm += 1;
 
@@ -32,8 +33,11 @@ function calculate(code) {
       ccm += 1;
     }
 
+    // console.log('is last: ' + toplevel.body[toplevel.body.length-1] === node);
+
     if(node instanceof uglify.AST_Jump) {
-      ccm += 1;
+      if(!(node instanceof uglify.AST_Return && toplevel.body[toplevel.body.length-1] === node)) 
+        ccm += 1;
     }
 
     if(node instanceof uglify.AST_Catch) {
@@ -52,8 +56,9 @@ function calculate(code) {
       ccm += 2;
     }
 
-  }));
+  });
 
+  toplevel.walk(treeWalker);
 
   return ccm;
 }

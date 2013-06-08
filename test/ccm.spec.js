@@ -108,6 +108,11 @@ describe('ccm', function() {
     var func = 'function f() { var a = b ? 1 : 2; }';
     expect(ccm.calculate(func)).to.equal(3);
   });
-  it('does not count `return` at the end of a function');
+
+  it('does not count `return` at the end of a function', function() {
+    var func = 'function f() { return; }';
+    expect(ccm.calculate(func)).to.equal(1);
+  });
+
   it('does not count `throw` at the end of a function');
 });
