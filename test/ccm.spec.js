@@ -66,4 +66,24 @@ describe('ccm', function() {
     expect(ccm.calculate(func)).to.equal(3);
   });
 
+  it('counts `continue` as 1', function() {
+    var func = 'function f() { var a; while(a) { continue; } }';
+
+    expect(ccm.calculate(func)).to.equal(3);
+  });
+
+  it('counts `return` as 1 when not at the end of the function', function() {
+    var func = 'function f() { var a=2; return a; b = 3; }';
+
+    expect(ccm.calculate(func)).to.equal(2);
+  });
+
+  it('counts `throw` as 1 when not at the end of the function', function() {
+    var func = 'function f() { var a=2; throw new Error("wat"); b = 3; }';
+
+    expect(ccm.calculate(func)).to.equal(2);
+  });
+
+  it('does not count `return` at the end of a function');
+  it('does not count `throw` at the end of a function');
 });

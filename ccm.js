@@ -32,9 +32,10 @@ function calculate(code) {
       ccm += 1;
     }
 
-    if(node instanceof uglify.AST_Break) {
+    if(node instanceof uglify.AST_Jump) {
       ccm += 1;
     }
+
   }));
 
 
