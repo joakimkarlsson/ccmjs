@@ -37,7 +37,7 @@ function calculate(func) {
 
     if(node instanceof uglify.AST_Jump) {
       if(node instanceof uglify.AST_Return) {
-        var myfunc = treeWalker.find_parent(uglify.AST_Defun);
+        var myfunc = treeWalker.find_parent(uglify.AST_Defun) || treeWalker.find_parent(uglify.AST_Function);
         if(equal(myfunc.body[myfunc.body.length-1], node)) {
           return;
         }
