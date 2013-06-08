@@ -48,4 +48,10 @@ describe('ccm', function() {
     expect(ccm.calculate(func)).to.equal(2);
   });
 
+  it('counts while as 1', function() {
+    var func = 'function f() { var a; while(a) { b = 1; } }';
+
+    expect(ccm.calculate(func)).to.equal(2);
+  });
+
 });
