@@ -1,0 +1,5 @@
+#! /usr/bin/env node
+
+var ccm = require('../ccm.js');
+
+ccm.calculate( 'function f(){ if(a) { b = 2; } }' );
