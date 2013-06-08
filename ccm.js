@@ -1,10 +1,11 @@
 var uglify = require('uglify-js');
 var util = require('util');
+var equal = require('deep-equal');
 
 function calculate(func) {
   var toplevel = uglify.parse(func);
 
-   console.log(util.inspect(toplevel, {depth: null, colors: true}));
+  // console.log(util.inspect(toplevel, {depth: null, colors: true}));
 
   var ccm = 1;
 
@@ -33,11 +34,15 @@ function calculate(func) {
       ccm += 1;
     }
 
-    // console.log('is last: ' + toplevel.body[toplevel.body.length-1] === node);
 
     if(node instanceof uglify.AST_Jump) {
-      if(!(node instanceof uglify.AST_Return && toplevel.body[toplevel.body.length-1] === node)) 
-        ccm += 1;
+      if(node instanceof uglify.AST_Return) {
+        var myfunc = treeWalker.find_parent(uglify.AST_Defun);
+        if(equal(myfunc.body[myfunc.body.length-1], node)) {
+          return;
+        }
+      }
+      ccm += 1;
     }
 
     if(node instanceof uglify.AST_Catch) {
