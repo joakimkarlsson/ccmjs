@@ -36,6 +36,18 @@ function calculate(code) {
       ccm += 1;
     }
 
+    if(node instanceof uglify.AST_Catch) {
+      ccm += 1;
+    }
+
+    if(node instanceof uglify.AST_Finally) {
+      ccm += 1;
+    }
+
+    if(node instanceof uglify.AST_Binary && (node.operator === '&&' || node.operator === '||')) {
+      ccm += 1;
+    }
+
   }));
 
 

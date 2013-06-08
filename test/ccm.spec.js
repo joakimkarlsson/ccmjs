@@ -84,6 +84,26 @@ describe('ccm', function() {
     expect(ccm.calculate(func)).to.equal(2);
   });
 
+  it('counts `catch` as 1', function() {
+    var func = 'function f() { try { a = 3; } catch(e) {} }';
+    expect(ccm.calculate(func)).to.equal(2);
+  });
+
+  it('counts `finally` as 1', function() {
+    var func = 'function f() { try { a = 3; } finally {} }';
+    expect(ccm.calculate(func)).to.equal(2);
+  });
+
+  it('counts `&&` as 1', function() {
+    var func = 'function f() { var a = b && 2; }';
+    expect(ccm.calculate(func)).to.equal(2);
+  });
+
+  it('counts `|| as 1', function() {
+    var func = 'function f() { var a = b || 2; }';
+    expect(ccm.calculate(func)).to.equal(2);
+  });
+
   it('does not count `return` at the end of a function');
   it('does not count `throw` at the end of a function');
 });
