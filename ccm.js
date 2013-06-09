@@ -89,8 +89,14 @@ function calculateForFunction (func) {
   return ccm;
 }
 
+function preprocess(code) {
+  // Comment out shebangs
+  return code.replace(/^\s*#\!/, '//$&');
+}
+
 function calculate(code) {
-  var toplevel = uglify.parse(code);
+  var processedCode = preprocess(code);
+  var toplevel = uglify.parse(processedCode);
 
   var result = [];
 

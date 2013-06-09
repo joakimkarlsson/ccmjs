@@ -1,5 +1,24 @@
 #! /usr/bin/env node
 
 var ccm = require('../ccm.js');
+var fs = require('fs');
+var util = require('util');
+var glob = require('glob');
 
-ccm.calculate( 'function f(){ return 5; return 3;}' );
+
+glob('**/*.js', function(err, files) {
+
+  files.forEach(function(file) {
+    console.log('ccm for ' + file);
+
+    try {
+      var fileContent = fs.readFileSync(file, { encoding: 'utf8' });
+      var res = ccm.calculate( fileContent );
+      console.log(util.inspect(res));
+    } catch(err) {
+      console.log(util.inspect(err));
+    }
+  });
+});
+
+

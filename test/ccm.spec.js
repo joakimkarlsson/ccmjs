@@ -180,4 +180,13 @@ describe('ccm', function() {
     expect(res[1]).to.deep.equal({'name': 'b', 'line': 2, 'ccm': 1});
   });
 
+  it('ignores shebangs in files', function() {
+    var code = 
+      '#!/usr/bin/env node\n' +
+      'function func() {}';
+
+    var res = ccm.calculate(code);
+
+    expect(res[0]).to.deep.equal({'name': 'func', 'line': 2, 'ccm': 1});
+  });
 });
