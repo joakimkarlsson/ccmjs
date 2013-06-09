@@ -2,70 +2,112 @@ var uglify = require('uglify-js');
 var util = require('util');
 var equal = require('deep-equal');
 
-function calculate(func) {
-  var toplevel = uglify.parse(func);
+function ccmForSimpleBranches(node) {
+  if(node instanceof uglify.AST_SwitchBranch ||
+     node instanceof uglify.AST_For ||
+       node instanceof uglify.AST_While ||
+         node instanceof uglify.AST_Do ||
+           node instanceof uglify.AST_Catch ||
+             node instanceof uglify.AST_Finally) {
+    return 1;
+  }
 
-  // console.log(util.inspect(toplevel, {depth: null, colors: true}));
+  return 0;
+}
 
+function ccmForConditional (node) {
+  if(node instanceof uglify.AST_Conditional) {
+    return 2;
+  }
+
+  return 0;
+}
+
+function ccmForBinaryOperators (node) {
+  if(node instanceof uglify.AST_Binary && (node.operator === '&&' || node.operator === '||')) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function ccmForJumps (node, func) {
+
+  function returnAtEndOfFunction () {
+    function isLastStatement () {
+      return equal(func.body[func.body.length-1], node); 
+    }
+
+    return node instanceof uglify.AST_Return && isLastStatement();
+  }
+
+  if(node instanceof uglify.AST_Jump && !returnAtEndOfFunction()) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function ccmForIfElse (node) {
+  var ccm = 0;
+
+  if(node instanceof uglify.AST_If) {
+    ccm += 1;
+
+    if(node.alternative) {
+      ccm += 1;
+    }
+  }
+  
+  return ccm;
+}
+
+function calculateForFunction (func) {
   var ccm = 1;
 
+  var calculators = [
+    ccmForIfElse,
+    ccmForJumps,
+    ccmForBinaryOperators,
+    ccmForConditional,
+    ccmForSimpleBranches
+  ];
+
+  var walker = new uglify.TreeWalker(function(node) {
+    for (var i = calculators.length - 1; i >= 0; i--) {
+      var ccmForBranch = calculators[i](node, func);
+
+      if(ccmForBranch > 0) {
+        ccm += ccmForBranch;
+        break;
+      }
+    };
+  })
+
+  func.walk(walker);
+
+  return ccm;
+}
+
+function calculate(code) {
+  var toplevel = uglify.parse(code);
+
+  var result = [];
+
   var treeWalker = new uglify.TreeWalker(function(node) {
-    if(node instanceof uglify.AST_If) {
-      ccm += 1;
+    var functionStats = {};
 
-      if(node.alternative) {
-        ccm += 1;
-      }
+    if(node instanceof uglify.AST_Function || node instanceof uglify.AST_Defun) {
+      functionStats.name = node.name ? node.name.name : '<anonymous>';
+      functionStats.ccm = calculateForFunction(node);
+
+      result.push(functionStats);
     }
-
-    if(node instanceof uglify.AST_SwitchBranch) {
-      ccm += 1;
-    }
-
-    if(node instanceof uglify.AST_For) {
-      ccm += 1;
-    }
-
-    if(node instanceof uglify.AST_While) {
-      ccm += 1;
-    }
-
-    if(node instanceof uglify.AST_Do) {
-      ccm += 1;
-    }
-
-
-    if(node instanceof uglify.AST_Jump) {
-      if(node instanceof uglify.AST_Return) {
-        var myfunc = treeWalker.find_parent(uglify.AST_Defun) || treeWalker.find_parent(uglify.AST_Function);
-        if(equal(myfunc.body[myfunc.body.length-1], node)) {
-          return;
-        }
-      }
-      ccm += 1;
-    }
-
-    if(node instanceof uglify.AST_Catch) {
-      ccm += 1;
-    }
-
-    if(node instanceof uglify.AST_Finally) {
-      ccm += 1;
-    }
-
-    if(node instanceof uglify.AST_Binary && (node.operator === '&&' || node.operator === '||')) {
-      ccm += 1;
-    }
-
-    if(node instanceof uglify.AST_Conditional) {
-      ccm += 2;
-    }
-
   });
 
   toplevel.walk(treeWalker);
 
-  return ccm;
+  return result;
 }
 
 module.exports = {
