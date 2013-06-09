@@ -123,6 +123,15 @@ describe('ccm', function() {
     expect(ccm.calculate(func)).to.deep.equal( [ { name: 'f', 'ccm': 1 } ]);
   });
 
-  it('does not count a switch statement containing only a default');
-  it('does not count `throw` at the end of a function');
+  it('returns complexity for multiple functions', function() {
+    var code = 
+      'function a() {}\n' +
+      'function b() {}';
+
+    var res = ccm.calculate(code);
+
+    expect(res[0]).to.deep.equal({'name': 'a', 'ccm': 1});
+    expect(res[1]).to.deep.equal({'name': 'b', 'ccm': 1});
+  });
+
 });
