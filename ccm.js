@@ -100,6 +100,7 @@ function calculate(code) {
     if(node instanceof uglify.AST_Function || node instanceof uglify.AST_Defun) {
       functionStats.name = node.name ? node.name.name : '<anonymous>';
       functionStats.ccm = calculateForFunction(node);
+      functionStats.line = node.start.line;
 
       result.push(functionStats);
     }
