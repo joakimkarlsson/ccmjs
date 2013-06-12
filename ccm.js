@@ -117,6 +117,24 @@ function calculate(code) {
   return result;
 }
 
+function createResult() {
+  var results = [];
+
+  return {
+    results: function() {
+      return results;
+    },
+    addResult: function(result) {
+      results.push(result);
+    }
+  };
+}
+
+function formatResult() {
+}
+
 module.exports = {
-  calculate: calculate
+  calculate: calculate,
+  createResult: createResult,
+  formatResult: formatResult
 }

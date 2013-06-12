@@ -7,9 +7,11 @@ var glob = require('glob');
 var argv = require('optimist')
             .default('files', './**/*.js')
             .default('encoding', 'utf8')
+            .default('results', '25')
             .argv;
 
             
+var topResult = ccm.createResult(parseInt(argv.topResultCount));
 glob(argv.files, function(err, files) {
 
   files.forEach(function(file) {
@@ -18,10 +20,14 @@ glob(argv.files, function(err, files) {
     try {
       var fileContent = fs.readFileSync(file, { encoding: argv.encoding });
       var res = ccm.calculate( fileContent );
+      res.file = file;
       console.log(util.inspect(res));
+      topResult.addResult(res);
     } catch(err) {
       console.log(util.inspect(err));
     }
+
+    console.log(ccm.formatResult(topResult));
   });
 });
 
