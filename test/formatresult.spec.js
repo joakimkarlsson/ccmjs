@@ -1,0 +1,25 @@
+var expect = require('chai').expect;
+var ccm = require('../ccm');
+
+describe('formatResult:', function() {
+  var results;
+  
+  beforeEach(function() {
+    results = ccm.createResult();
+
+    results.addResult({file: 'a/file', ccm: 5, name: 'withoutMuchRiskFunction', line: 12});
+    results.addResult({file: 'a/file', ccm: 25, name: 'highRiskFunction', line: 74});
+    results.addResult({file: 'a/file', ccm: 12, name: 'moderateRiskFunction', line: 34});
+    results.addResult({file: 'a/file', ccm: 51, name: 'untestableFunction', line: 173});
+  });
+
+  it('formats the result according to sei thresholds', function() {
+    expect(ccm.formatResult(results)).to.deep.equal([
+      'a/file(173): \'untestableFunction\' 51 (untestable, very high risk)',
+      'a/file(74): \'highRiskFunction\' 25 (complex, high risk)',
+      'a/file(34): \'moderateRiskFunction\' 12 (more complex, moderate risk)',
+      'a/file(12): \'withoutMuchRiskFunction\' 5 (simple, without much risk)',
+
+    ]);
+  });
+});
