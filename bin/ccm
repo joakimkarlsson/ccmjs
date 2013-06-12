@@ -22,12 +22,11 @@ glob(argv.files, function(err, files) {
     } catch(err) {
       console.log(util.inspect(err));
     }
-
+  });
 
     ccm.formatResult(topResult).forEach(function(res) {
       console.log(res);
     });
-  });
 });
 
 
