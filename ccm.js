@@ -117,16 +117,41 @@ function calculate(code) {
   return result;
 }
 
-function createResult() {
+function createResult(capacity) {
   var results = [];
+
+  function addResult(result) {
+    var i,
+        len,
+        added = false;
+
+    if(results.length == 0) {
+      results.push(result);
+      return;
+    }
+
+    for(i=0, len = results.length; i<len; i += 1) {
+      if(result.ccm > results[i].ccm) {
+        results.splice(i, 0, result);
+        added = true;
+        break;
+      }
+    }
+
+    if(!added) {
+      results.push(result);
+    }
+
+    if(capacity && results.length > capacity) {
+      results.splice(-1, 1);
+    }
+  }
 
   return {
     results: function() {
       return results;
     },
-    addResult: function(result) {
-      results.push(result);
-    }
+    addResult: addResult
   };
 }
 
