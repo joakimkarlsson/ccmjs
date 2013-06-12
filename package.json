@@ -1,0 +1,34 @@
+{
+  "author": {
+    "name": "Joakim Karlsson",
+    "email": "joakim@jkarlsson.com"
+  },
+  "name": "ccm",
+  "description": "Calculates cyclomatic complexity metrics (ccm) for JavaScript.",
+  "license": "MIT",
+  "contributors": [
+    {
+      "name": "Joakim Karlsson",
+      "email": "joakim@jkarlsson.com"
+    }
+  ],
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "http://example.com/todo"
+  },
+  "main": "./ccm",
+  "scripts": {
+    "test": "node_modules/.bin/mocha"
+  },
+  "dependencies": {
+    "uglify-js": "2.3.6",
+    "deep-equal": "0.0.0",
+    "glob": "3.2.1",
+    "optimist": "0.5.2"
+  },
+  "devDependencies": {
+    "mocha": "1.10.0",
+    "chai": "1.6.1"
+  }
+}
