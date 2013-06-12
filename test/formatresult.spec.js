@@ -7,10 +7,10 @@ describe('formatResult:', function() {
   beforeEach(function() {
     results = ccm.createResult();
 
-    results.addResult({file: 'a/file', ccm: 5, name: 'withoutMuchRiskFunction', line: 12});
-    results.addResult({file: 'a/file', ccm: 25, name: 'highRiskFunction', line: 74});
-    results.addResult({file: 'a/file', ccm: 12, name: 'moderateRiskFunction', line: 34});
-    results.addResult({file: 'a/file', ccm: 51, name: 'untestableFunction', line: 173});
+    results.addResults('a/file', [{ ccm: 5, name: 'withoutMuchRiskFunction', line: 12},
+    { ccm: 25, name: 'highRiskFunction', line: 74},
+    { ccm: 12, name: 'moderateRiskFunction', line: 34},
+    { ccm: 51, name: 'untestableFunction', line: 173}]);
   });
 
   it('formats the result according to sei thresholds', function() {

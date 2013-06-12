@@ -1,22 +1,26 @@
-var expect = require('chai').expect;
+var chai = require('chai');
+chai.use(require('chai-things'));
+var expect = chai.expect;
 var ccm = require('../ccm');
+var util = require('util');
 
 describe('ccmResult:', function() {
   var results;
-  var mediumComplexity = {file: 'file1', ccm: 15, name: 'mediumComplexFunction', line: 23},
-    highComplexity = {file: 'file1', ccm: 20, name: 'highComplexFunction', line: 32},
-    lowComplexity = {file: 'file1', ccm: 2, name: 'lowComplexFunction', line: 13},
-    reallyLowComplexity = {file: 'file1', ccm: 1, name: 'simpleFunction', line: 18},
-    reallyHighComplexity = {file: 'file1', ccm: 99, name: 'reallyComplexFunction', line: 997};
+  var mediumComplexity = {ccm: 15, name: 'mediumComplexFunction', line: 23},
+    highComplexity = {ccm: 20, name: 'highComplexFunction', line: 32},
+    lowComplexity = {ccm: 2, name: 'lowComplexFunction', line: 13},
+    reallyLowComplexity = {ccm: 1, name: 'simpleFunction', line: 18},
+    reallyHighComplexity = {ccm: 99, name: 'reallyComplexFunction', line: 997};
 
   it('store infinite amount of results if no capacity is defined', function() {
     results = ccm.createResult();
 
-    results.addResult(mediumComplexity);
-    results.addResult(lowComplexity);
-    results.addResult(reallyLowComplexity);
-    results.addResult(reallyHighComplexity);
-    results.addResult(highComplexity);
+    results.addResults('file', [
+                       mediumComplexity,
+                       lowComplexity,
+                       reallyLowComplexity,
+                       reallyHighComplexity,
+                       highComplexity]);
 
     expect(results.results()).to.have.length(5);
   });
@@ -32,55 +36,61 @@ describe('ccmResult:', function() {
     });
 
     it('adds a result', function() {
-      var resultToAdd = {file: 'filename', name: 'functionName', ccm: 2, line: 3};
-      results.addResult(resultToAdd);
+      results.addResults('filename', [lowComplexity]);
 
       var actual = results.results();
 
       expect(actual).to.have.length(1);
-      expect(actual[0]).to.deep.equal(resultToAdd);
+      expect(actual[0]).to.deep.equal(withFile('filename', lowComplexity));
     });
 
     describe('containing two results:', function() {
 
       beforeEach(function() {
-        results.addResult(lowComplexity);
-        results.addResult(highComplexity);
+        results.addResults('file', [lowComplexity, highComplexity]);
       });
 
       it('disregards function with lower complexity than those stored', function() {
-        results.addResult(reallyLowComplexity);
+        results.addResults('file', [reallyLowComplexity]);
 
-        expect(results.results()).not.to.contain(reallyLowComplexity);
+        expect(results.results()).not.to.contain(withFile('file', reallyLowComplexity));
       });
 
       it('removes results with low complexity when higher complexity is found', function() {
-        results.addResult(mediumComplexity);
+        results.addResults('file', [mediumComplexity]);
 
-        expect(results.results()).to.contain(highComplexity);
-        expect(results.results()).to.contain(mediumComplexity);
-        expect(results.results()).not.to.contain(lowComplexity);
+        expect(results.results()).to.contain.one.that.deep.equals(withFile('file', highComplexity));
+        expect(results.results()).to.contain.one.that.deep.equals(withFile('file', mediumComplexity));
+        expect(results.results()).not.to.contain.one.that.deep.equals(withFile('file', lowComplexity));
       });
     });
 
     describe('containing three results:', function() {
       beforeEach(function() {
-        var results = ccm.createResult(3);
-        results.addResult(lowComplexity);
-        results.addResult(highComplexity);
-        results.addResult(reallyLowComplexity);
+        results = ccm.createResult(3);
+        results.addResults('file', [
+                           lowComplexity,
+                            highComplexity,
+                            reallyLowComplexity]);
       });
 
       it('pushes out the two functions with lowest complexity if two higher functions are added', function() {
-        results.addResult(mediumComplexity);
-        results.addResult(reallyHighComplexity);
+        results.addResults('file2', [mediumComplexity, reallyHighComplexity]);
 
-        expect(results.results()).to.contain(reallyHighComplexity);
-        expect(results.results()).to.contain(mediumComplexity);
-        expect(results.results()).not.to.contain(lowComplexity);
-        expect(results.results()).not.to.contain(reallyLowComplexity);
+        var res = results.results();
+        expect(res).to.contain.one.that.deep.equals(withFile('file2', reallyHighComplexity));
+        expect(res).to.contain.one.that.deep.equals(withFile('file2', mediumComplexity));
+        expect(res).to.contain.one.that.deep.equals(withFile('file', highComplexity));
+        expect(res).not.to.contain.one.that.deep.equals(withFile('file', lowComplexity));
+        expect(res).not.to.contain.one.that.deep.equals(withFile('file', reallyLowComplexity));
       });
     });
   });
+
+  function withFile(file, result) {
+    var clone = JSON.parse(JSON.stringify(result));
+    clone.file = file;
+    return clone;
+  }
 });
 

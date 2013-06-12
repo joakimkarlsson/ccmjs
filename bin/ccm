@@ -11,20 +11,22 @@ var argv = require('optimist')
             .argv;
 
             
-var topResult = ccm.createResult(parseInt(argv.topResultCount));
+var topResult = ccm.createResult(parseInt(argv.results));
 glob(argv.files, function(err, files) {
 
   files.forEach(function(file) {
     try {
       var fileContent = fs.readFileSync(file, { encoding: argv.encoding });
       var res = ccm.calculate( fileContent );
-      res.file = file;
-      topResult.addResult(res);
+      topResult.addResults(file, res);
     } catch(err) {
       console.log(util.inspect(err));
     }
 
-    console.log(ccm.formatResult(topResult));
+
+    ccm.formatResult(topResult).forEach(function(res) {
+      console.log(res);
+    });
   });
 });
 
