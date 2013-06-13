@@ -12,12 +12,25 @@ var argv = require('optimist')
             .argv;
 
             
+
+var excludes;
+if(argv.exclude) {
+  exclude = String.prototype.split.call(argv.exclude, ',');
+}
+
 var topResult = ccm.createResult(parseInt(argv.results));
 glob(argv.files, function(err, files) {
 
   files.forEach(function(file) {
-	if(argv.exclude && minimatch(file, argv.exclude)) {
-		return;
+    var i, len;
+	if(exclude) {
+    for(i = 0, len = exclude.length; i < len; i += 1) {
+      console.log("matching " + file + " against " + exclude[i]);
+      if(minimatch(file, exclude[i])) {
+        console.log("MATCH!!!---------");
+        return;
+      }
+    }
 	};
 
     try {
