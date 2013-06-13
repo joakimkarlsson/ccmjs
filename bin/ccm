@@ -6,7 +6,8 @@ var util = require('util');
 var glob = require('glob');
 var minimatch = require('minimatch');
 var argv = require('optimist')
-            .default('files', './**/*.js')
+            .usage('Usage: $0 --files "files/to/**/include/*.js" [--results num] [--exclude "files/to/**/exclude/*.js]')
+            .demand(['files'])
             .default('encoding', 'utf8')
             .default('results', '25')
             .argv;
