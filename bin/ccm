@@ -34,6 +34,7 @@ glob(argv.files, function(err, files) {
       var res = ccm.calculate( fileContent );
       topResult.addResults(file, res);
     } catch(err) {
+      console.error('\nError while parsing file: ' + file);
       console.error(err.toString());
     }
   });
