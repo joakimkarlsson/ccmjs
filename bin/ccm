@@ -8,8 +8,10 @@ var minimatch = require('minimatch');
 var argv = require('optimist')
             .usage('Usage: $0 --files "files/to/**/include/*.js" [--results num] [--exclude "files/to/**/exclude/*.js]')
             .demand(['files'])
-            .default('encoding', 'utf8')
             .default('results', '25')
+            .describe('files', 'glob of files to include (put this in quotes)')
+            .describe('exclude', 'glob of files to exclude. can be specified multiple times. (put this in quotes).')
+            .describe('results', 'Number of entries to include in result')
             .argv;
 
 var exclude;
@@ -31,7 +33,7 @@ glob(argv.files, function(err, files) {
     };
 
     try {
-      var fileContent = fs.readFileSync(file, { encoding: argv.encoding });
+      var fileContent = fs.readFileSync(file, { encoding: 'utf8' });
       var res = ccm.calculate( fileContent );
       topResult.addResults(file, res);
     } catch(err) {
