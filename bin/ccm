@@ -25,7 +25,7 @@ glob(argv.files, function(err, files) {
       var res = ccm.calculate( fileContent );
       topResult.addResults(file, res);
     } catch(err) {
-      console.log(util.inspect(err));
+      console.error(err.toString());
     }
   });
 
