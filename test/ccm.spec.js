@@ -1,5 +1,6 @@
 var expect = require('chai').expect;
 var ccm = require('../ccm');
+var util = require('util');
 
 describe('ccm', function() {
   it('counts an empty function as 1', function() {
@@ -121,6 +122,7 @@ describe('ccm', function() {
   });
 
   it('counts `?:` as 2', function() {
+	  debugger;
     var func = 'function f() { var a = b ? 1 : 2; }';
     var res = ccm.calculate(func);
     expect(res[0]).to.have.property( 'ccm', 3 );
@@ -188,5 +190,24 @@ describe('ccm', function() {
     var res = ccm.calculate(code);
 
     expect(res[0]).to.deep.equal({'name': 'func', 'line': 2, 'ccm': 1});
+  });
+
+  it('handles nested functions', function() {
+	  var code = 
+		  '(function() {\n' +
+		  '	var a;\n' +
+		  '	if(true) {\n' +
+		  '		a = b();\n' +
+		  '	}\n' +
+		  '\n' +
+		  '	function b() {\n' +
+		  '		return 3;\n' +
+		  '	}\n' +
+		  '})();\n'; 
+
+	  var res = ccm.calculate(code);
+
+	  expect(res).to.contain.one.deep.equal({'name': '<anonymous>', 'line': 1, 'ccm': 2});
+	  expect(res).to.contain.one.deep.equal({'name': 'b', 'line': 7, 'ccm': 1});
   });
 });

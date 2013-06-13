@@ -63,30 +63,46 @@ function ccmForIfElse (node) {
 }
 
 function calculateForFunction (func) {
-  var ccm = 1;
+	var ccm = 1,
+	stats = [];
 
-  var calculators = [
-    ccmForIfElse,
-    ccmForJumps,
-    ccmForBinaryOperators,
-    ccmForConditional,
-    ccmForSimpleBranches
-  ];
+	var calculators = [
+		ccmForIfElse,
+		ccmForJumps,
+		ccmForBinaryOperators,
+		ccmForConditional,
+		ccmForSimpleBranches
+	];
 
-  var walker = new uglify.TreeWalker(function(node) {
-    for (var i = calculators.length - 1; i >= 0; i--) {
-      var ccmForBranch = calculators[i](node, func);
+	var walker = new uglify.TreeWalker(function(node) {
+		if(node instanceof uglify.AST_Function || node instanceof uglify.AST_Defun) {
+			if(!equal(node, func)) {
+				stats = stats.concat(calculateForFunction(node));
+				return true;
+			}
+		}
+		else {
+			for (var i = calculators.length - 1; i >= 0; i--) {
+				var ccmForBranch = calculators[i](node, func);
 
-      if(ccmForBranch > 0) {
-        ccm += ccmForBranch;
-        break;
-      }
-    };
-  })
+				if(ccmForBranch > 0) {
+					ccm += ccmForBranch;
+					break;
+				}
+			};
 
-  func.walk(walker);
+		}
+	})
 
-  return ccm;
+	func.walk(walker);
+
+	stats.push({
+		name: func.name ? func.name.name : '<anonymous>',
+		ccm: ccm,
+		line: func.start.line
+	});
+
+	return stats;
 }
 
 function preprocess(code) {
@@ -104,11 +120,10 @@ function calculate(code) {
     var functionStats = {};
 
     if(node instanceof uglify.AST_Function || node instanceof uglify.AST_Defun) {
-      functionStats.name = node.name ? node.name.name : '<anonymous>';
-      functionStats.ccm = calculateForFunction(node);
-      functionStats.line = node.start.line;
+      functionStats = calculateForFunction(node);
 
-      result.push(functionStats);
+      result = result.concat(functionStats);
+	  return true;
     }
   });
 

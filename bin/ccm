@@ -4,6 +4,7 @@ var ccm = require('../ccm.js');
 var fs = require('fs');
 var util = require('util');
 var glob = require('glob');
+var minimatch = require('minimatch');
 var argv = require('optimist')
             .default('files', './**/*.js')
             .default('encoding', 'utf8')
@@ -15,6 +16,10 @@ var topResult = ccm.createResult(parseInt(argv.results));
 glob(argv.files, function(err, files) {
 
   files.forEach(function(file) {
+	if(argv.exclude && minimatch(file, argv.exclude)) {
+		return;
+	};
+
     try {
       var fileContent = fs.readFileSync(file, { encoding: argv.encoding });
       var res = ccm.calculate( fileContent );
