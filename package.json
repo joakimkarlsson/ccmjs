@@ -12,12 +12,13 @@
       "email": "joakim@jkarlsson.com"
     }
   ],
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/joakimkarlsson/ccmjs.git"
   },
   "main": "./ccm",
+  "bin": "./bin/ccm",
   "scripts": {
     "test": "mocha"
   },
