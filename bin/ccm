@@ -11,9 +11,7 @@ var argv = require('optimist')
             .default('results', '25')
             .argv;
 
-            
-
-var excludes;
+var exclude;
 if(argv.exclude) {
   exclude = String.prototype.split.call(argv.exclude, ',');
 }
@@ -23,15 +21,13 @@ glob(argv.files, function(err, files) {
 
   files.forEach(function(file) {
     var i, len;
-	if(exclude) {
-    for(i = 0, len = exclude.length; i < len; i += 1) {
-      console.log("matching " + file + " against " + exclude[i]);
-      if(minimatch(file, exclude[i])) {
-        console.log("MATCH!!!---------");
-        return;
+    if(exclude) {
+      for(i = 0, len = exclude.length; i < len; i += 1) {
+        if(minimatch(file, exclude[i])) {
+          return;
+        }
       }
-    }
-	};
+    };
 
     try {
       var fileContent = fs.readFileSync(file, { encoding: argv.encoding });
