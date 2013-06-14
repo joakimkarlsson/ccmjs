@@ -1,10 +1,10 @@
 var chai = require('chai');
 chai.use(require('chai-things'));
 var expect = chai.expect;
-var ccm = require('../ccm');
+var resultsFactory = require('../lib/results');
 var util = require('util');
 
-describe('ccmResult:', function() {
+describe('results:', function() {
   var results;
   var mediumComplexity = {ccm: 15, name: 'mediumComplexFunction', line: 23},
     highComplexity = {ccm: 20, name: 'highComplexFunction', line: 32},
@@ -13,7 +13,7 @@ describe('ccmResult:', function() {
     reallyHighComplexity = {ccm: 99, name: 'reallyComplexFunction', line: 997};
 
   it('store infinite amount of results if no capacity is defined', function() {
-    results = ccm.createResult();
+    results = resultsFactory.createResult();
 
     results.addResults('file', [
                        mediumComplexity,
@@ -28,7 +28,7 @@ describe('ccmResult:', function() {
   describe('with a capacity of two', function() {
 
     beforeEach(function() {
-      results = ccm.createResult(2);
+      results = resultsFactory.createResult(2);
     });
 
     it('is initially empty', function() {
@@ -67,7 +67,7 @@ describe('ccmResult:', function() {
 
     describe('containing three results:', function() {
       beforeEach(function() {
-        results = ccm.createResult(3);
+        results = resultsFactory.createResult(3);
         results.addResults('file', [
                            lowComplexity,
                             highComplexity,

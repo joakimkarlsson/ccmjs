@@ -1,11 +1,12 @@
 var expect = require('chai').expect;
-var ccm = require('../ccm');
+var resultsFactory = require('../lib/results');
+var formatter = require('../lib/formatter');
 
 describe('formatResult:', function() {
   var results;
   
   beforeEach(function() {
-    results = ccm.createResult();
+    results = resultsFactory.createResult();
 
     results.addResults('a/file', [{ ccm: 5, name: 'withoutMuchRiskFunction', line: 12},
     { ccm: 25, name: 'highRiskFunction', line: 74},
@@ -14,7 +15,7 @@ describe('formatResult:', function() {
   });
 
   it('formats the result according to sei thresholds', function() {
-    expect(ccm.formatResult(results)).to.deep.equal([
+    expect(formatter.formatResult(results)).to.deep.equal([
       'a/file(173): \'untestableFunction\' 51 (untestable, very high risk)',
       'a/file(74): \'highRiskFunction\' 25 (complex, high risk)',
       'a/file(34): \'moderateRiskFunction\' 12 (more complex, moderate risk)',
