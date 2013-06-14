@@ -38,7 +38,7 @@ glob(argv.files, function(err, files) {
       topResult.addResults(file, res);
     } catch(err) {
       console.error('\nError while parsing file: ' + file);
-      console.error(err.toString());
+      console.error(util.inspect(err));
     }
   });
 
