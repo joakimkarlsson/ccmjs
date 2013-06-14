@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 
 var ccm = require('../ccm.js');
+var fileCalculator = require('../lib/filecalculator');
 var fs = require('fs');
 var util = require('util');
 var glob = require('glob');
@@ -20,31 +21,30 @@ if(argv.exclude) {
 }
 
 var topResult = ccm.createResult(parseInt(argv.results));
-glob(argv.files, function(err, files) {
+var calculator = fileCalculator.create(fs, ccm, topResult, function(file) {
+  if(!exclude) {
+    return true;
+  }
 
-  files.forEach(function(file) {
-    var i, len;
-    if(exclude) {
-      for(i = 0, len = exclude.length; i < len; i += 1) {
-        if(minimatch(file, exclude[i])) {
-          return;
-        }
-      }
-    };
-
-    try {
-      var fileContent = fs.readFileSync(file, { encoding: 'utf8' });
-      var res = ccm.calculate( fileContent );
-      topResult.addResults(file, res);
-    } catch(err) {
-      console.error('\nError while parsing file: ' + file);
-      console.error(util.inspect(err));
+  for(i = 0, len = exclude.length; i < len; i += 1) {
+    if(minimatch(file, exclude[i])) {
+      return false;
     }
+  };
+});
+
+glob(argv.files, function(err, files) {
+  var res = calculator.calculateFor(files);
+  ccm.formatResult(res.results).forEach(function(res) {
+    console.log(res);
   });
 
-    ccm.formatResult(topResult).forEach(function(res) {
-      console.log(res);
+  if(res.errors && res.errors.length > 0) {
+    console.log('\nFailed to parse the following files:');
+    res.errors.forEach(function(err) {
+      console.log(util.inspect(err));
     });
+  }
 });
 
 

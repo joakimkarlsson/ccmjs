@@ -15,7 +15,7 @@ describe('formatResult:', function() {
   });
 
   it('formats the result according to sei thresholds', function() {
-    expect(formatter.formatResult(results)).to.deep.equal([
+    expect(formatter.formatResult(results.results())).to.deep.equal([
       'a/file(173): \'untestableFunction\' 51 (untestable, very high risk)',
       'a/file(74): \'highRiskFunction\' 25 (complex, high risk)',
       'a/file(34): \'moderateRiskFunction\' 12 (more complex, moderate risk)',
