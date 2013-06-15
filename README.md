@@ -13,4 +13,4 @@ ccm --files "path/**/of/files/to/include/*.js" --exclude "exclude/**/this" --exc
 ```
 ## Output
 
-ccm will parse all files specifed by the `--files` and `--exclude` arguments and list the functions that has the highest ccm. The number of functions to include in the result is specified by --results`.
+ccm will parse all files specifed by the `--files` and `--exclude` arguments and list the functions that has the highest ccm. The number of functions to include in the result is specified by `--results`.
