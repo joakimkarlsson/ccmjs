@@ -31,6 +31,8 @@ var calculator = fileCalculator.create(fs, ccm, topResult, function(file) {
       return false;
     }
   };
+
+  return true;
 });
 
 glob(argv.files, function(err, files) {
