@@ -1,8 +1,9 @@
 var expect = require('chai').expect;
 var calculator = require('../lib/calculator');
 var util = require('util');
+var sinon = require('sinon');
 
-describe('calculator', function() {
+describe('calculator:', function() {
   it('counts an empty function as 1', function() {
     var func = 'function f(){}';
 
@@ -209,5 +210,14 @@ describe('calculator', function() {
 
 	  expect(res).to.contain.one.deep.equal({'name': '<anonymous>', 'line': 1, 'ccm': 2});
 	  expect(res).to.contain.one.deep.equal({'name': 'b', 'line': 7, 'ccm': 1});
+  });
+
+  it('calls a callback when there is a syntax error', function() {
+    var code = 'return;',
+        error = sinon.spy();
+
+    calculator.calculate(code, error);
+
+    sinon.assert.calledWith(error, {message: "'return' outside of function", line: 1, col: 6});
   });
 });
