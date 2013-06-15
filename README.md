@@ -1,4 +1,5 @@
 # ccm
+[![Build Status](https://travis-ci.org/joakimkarlsson/ccmjs.png)](https://travis-ci.org/joakimkarlsson/ccmjs)
 
 Calculates cyclomatic complexity metrics (CCM) for JavaScript.
 
