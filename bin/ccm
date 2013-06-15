@@ -37,7 +37,7 @@ glob(argv.files, function(err, files) {
   if(res.errors && res.errors.length > 0) {
     console.log('\nFailed to parse the following files:');
     res.errors.forEach(function(err) {
-      console.log(util.inspect(err));
+      console.log(err.file + ' (' + err.line + ',' + err.col + '): ' + err.message);
     });
   }
 });
