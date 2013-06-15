@@ -2,37 +2,30 @@
 
 var ccm = require('../ccm.js');
 var fileCalculator = require('../lib/filecalculator');
+var fileFilter = require('../lib/fileFilter');
 var fs = require('fs');
 var util = require('util');
 var glob = require('glob');
 var minimatch = require('minimatch');
 var argv = require('optimist')
-            .usage('Usage: $0 --files "files/to/**/include/*.js" [--results num] [--exclude "files/to/**/exclude/*.js]')
-            .demand(['files'])
-            .default('results', '25')
-            .describe('files', 'glob of files to include (put this in quotes)')
-            .describe('exclude', 'glob of files to exclude. can be specified multiple times. (put this in quotes).')
-            .describe('results', 'Number of entries to include in result')
-            .argv;
+  .usage('Usage: $0 --files "files/to/**/include/*.js" [--results num] [--exclude "files/to/**/exclude/*.js]')
+  .demand(['files'])
+  .default('results', '25')
+  .describe('files', 'glob of files to include (put this in quotes)')
+  .describe('exclude', 'glob of files to exclude. can be specified multiple times. (put this in quotes).')
+  .describe('results', 'Number of entries to include in result')
+  .argv;
 
 var exclude;
 if(argv.exclude) {
   exclude = String.prototype.split.call(argv.exclude, ',');
 }
 
+var filter = fileFilter.create(exclude);
+
 var topResult = ccm.createResult(parseInt(argv.results));
 var calculator = fileCalculator.create(fs, ccm, topResult, function(file) {
-  if(!exclude) {
-    return true;
-  }
-
-  for(i = 0, len = exclude.length; i < len; i += 1) {
-    if(minimatch(file, exclude[i])) {
-      return false;
-    }
-  };
-
-  return true;
+  return !filter(file);
 });
 
 glob(argv.files, function(err, files) {
