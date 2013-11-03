@@ -1,12 +1,6 @@
 #! /usr/bin/env node
 
 var ccm = require('../ccm.js');
-var fileCalculator = require('../lib/filecalculator');
-var fileFilter = require('../lib/fileFilter');
-var fs = require('fs');
-var util = require('util');
-var glob = require('glob');
-var minimatch = require('minimatch');
 var argv = require('optimist')
   .usage('Usage: $0 --files "files/to/**/include/*.js" [--results num] [--exclude "files/to/**/exclude/*.js]')
   .demand(['files'])
@@ -21,25 +15,11 @@ if(argv.exclude) {
   exclude = String.prototype.split.call(argv.exclude, ',');
 }
 
-var filter = fileFilter.create(exclude);
-
-var topResult = ccm.createResult(parseInt(argv.results));
-var calculator = fileCalculator.create(fs, ccm, topResult, function(file) {
-  return !filter(file);
+ccm.run({
+  files: argv.files,
+  exclude: exclude,
+  results: argv.results
 });
 
-glob(argv.files, function(err, files) {
-  var res = calculator.calculateFor(files);
-  ccm.formatResult(res.results).forEach(function(res) {
-    console.log(res);
-  });
-
-  if(res.errors && res.errors.length > 0) {
-    console.log('\nFailed to parse the following files:');
-    res.errors.forEach(function(err) {
-      console.log(err.file + ' (' + err.line + ',' + err.col + '): ' + err.message);
-    });
-  }
-});
 
 
