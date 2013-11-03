@@ -17,12 +17,12 @@ function run(options) {
     calculate: calculator.calculate,
   }
 
-  var calculator = fileCalculator.create(fs, ccmCalculator, topResult, function(file) {
+  var calc = fileCalculator.create(fs, ccmCalculator, topResult, function(file) {
     return !filter(file);
   });
 
   glob(options.files, function(err, files) {
-    var res = calculator.calculateFor(files);
+    var res = calc.calculateFor(files);
     formatter.formatResult(res.results).forEach(function(res) {
       console.log(res);
     });
